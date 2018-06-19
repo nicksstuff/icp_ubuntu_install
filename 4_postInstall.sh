@@ -214,30 +214,6 @@ fi
 
 
 
-echo "-----------------------------------------------------------------------------------------------------------"
-echo "-----------------------------------------------------------------------------------------------------------"
-read -p "Install and configure ISTIO Sidecar Injection(not recommended)? [y,N]" DO_ISTIOSC
-if [[ $DO_ISTIOSC == "y" ||  $DO_ISTIOSC == "Y" ]]; then
-  ./install/kubernetes/webhook-create-signed-cert.sh \
-      --service istio-sidecar-injector \
-      --namespace istio-system \
-      --secret sidecar-injector-certs
-
-  kubectl apply -f install/kubernetes/istio-sidecar-injector-configmap-release.yaml
-
-  cat install/kubernetes/istio-sidecar-injector.yaml | \
-       ./install/kubernetes/webhook-patch-ca-bundle.sh > \
-       install/kubernetes/istio-sidecar-injector-with-ca-bundle.yaml
-
-  kubectl apply -f install/kubernetes/istio-sidecar-injector-with-ca-bundle.yaml
-  kubectl label namespace default istio-injection=enabled
-  kubectl get namespace -L istio-injection
-else
-  echo "ISTIO Sidecar Injection not configured"
-fi
-
-
-
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -254,6 +230,7 @@ if [[ $DO_AM == "y" ||  $DO_AM == "Y" ]]; then
 else
   echo "Alert Manager not configured"
 fi
+
 
 read -p "Install and configure CALICO Commandline? [y,N]" DO_CAL
 if [[ $DO_CAL == "y" ||  $DO_CAL == "Y" ]]; then
@@ -275,22 +252,28 @@ if [[ $DO_LIB == "y" ||  $DO_LIB == "Y" ]]; then
   # Create Liberty Demo
   echo "Download Liberty Demo"
   cd ~/INSTALL/
-  git clone https://github.com/niklaushirt/libertysimple.git
-  cd ~/INSTALL/libertysimple
-  docker build -t libertysimple:1.0.0 docker_100
-  docker build -t libertysimple:1.1.0 docker_110
-  docker build -t libertysimple:1.2.0 docker_120
-  docker build -t libertysimple:1.3.0 docker_130
+  git clone https://github.com/niklaushirt/demoliberty.git
+  cd ~/INSTALL/demoliberty
+  docker build -t demoliberty:1.0.0 docker_100
+  docker build -t demoliberty:1.1.0 docker_110
+  docker build -t demoliberty:1.2.0 docker_120
+  docker build -t demoliberty:1.3.0 docker_130
 
   docker login mycluster.icp:8500 -u admin -p admin
-  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/libertysimple:1.3.0
-  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/libertysimple:1.2.0
-  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/libertysimple:1.1.0
-  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/libertysimple:1.0.0
-  docker push mycluster.icp:8500/default/libertysimple:1.3.0
-  docker push mycluster.icp:8500/default/libertysimple:1.2.0
-  docker push mycluster.icp:8500/default/libertysimple:1.1.0
-  docker push mycluster.icp:8500/default/libertysimple:1.0.0
+  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/demoliberty:1.3.0
+  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/demoliberty:1.2.0
+  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/demoliberty:1.1.0
+  docker tag libertysimple:1.3.0 mycluster.icp:8500/default/demoliberty:1.0.0
+  docker push mycluster.icp:8500/default/demoliberty:1.3.0
+  docker push mycluster.icp:8500/default/demoliberty:1.2.0
+  docker push mycluster.icp:8500/default/demoliberty:1.1.0
+  docker push mycluster.icp:8500/default/demoliberty:1.0.0
+
+  echo "SET WORKER PLACEMENT labels"
+  for ((i=0; i < $NUM_WORKERS; i++)); do
+    kubectl label nodes ${WORKER_IPS[i]} placement=local
+  done
+
 else
   echo "Liberty Demo not configured"
 fi
@@ -305,6 +288,9 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   # Create some Stuff
   echo "Create some Stuff"
   cd ~/INSTALL/
+  kubectl create namespace dev-namespace
+  kubectl create namespace test-namespace
+
   kubectl create secret docker-registry camsecret --docker-username=test --docker-password=abcd --docker-email=test@gmail.com -n services
   kubectl create -f ~/INSTALL/KUBE/CONFIG/devlimits_quota.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/restricted_policy.yaml
@@ -313,3 +299,44 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
 else
   echo "Stuff not configured"
 fi
+
+
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "ALL DONE"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "Please execute 'source ~/.bashrc'"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "Configure LDAP"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "LDAP_ID               : OPENLDAP"
+echo "LDAP_URL              : ldap://${PUBLIC_IP}:389"
+echo "LDAP_BASEDN           : dc=mycluster,dc=icp"
+echo "LDAP_BINDDN           : cn=admin,dc=mycluster,dc=icp"
+echo "LDAP_BINDPASSWORD     : admin"
+echo "LDAP_TYPE             : Custom"
+echo "LDAP_USERFILTER       : (&(uid=%v)(objectclass=person))"
+echo "LDAP_GROUPFILTER      : (&(cn=%v)(objectclass=groupOfUniqueNames))"
+echo "LDAP_USERIDMAP        :  *:uid"
+echo "LDAP_GROUPIDMAP       : *:cn"
+echo "LDAP_GROUPMEMBERIDMAP : groupOfUniqueNames:uniquemember"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "Add Repositories"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "Charts"
+echo "https://raw.githubusercontent.com/niklaushirt/charts/master/charts/repo/stable/"
+echo ""
+echo "Liberty Simple"
+echo "https://raw.githubusercontent.com/niklaushirt/demoliberty/master/charts/stable/repo/stable/"
+echo ""
+echo "Service Broker"
+echo "https://raw.githubusercontent.com/niklaushirt/servicebroker/master/charts/repo/stable/"
