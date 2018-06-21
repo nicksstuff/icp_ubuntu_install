@@ -1,22 +1,40 @@
 #!/bin/bash
 
+source ~/INSTALL/0_variables.sh
+
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Command Line Tools";
 # Install Command Line Tools
+
+echo "Installing kubectl";
 docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | sudo bash
+
+
+
+echo "Installing helm";
+#Install HELM CLI
+docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
+
+#Install ICP BX CLI + Plugin
+wget https://clis.ng.bluemix.net/download/bluemix-cli/latest/linux64
+tar xvfz linux64
+
+cd Bluemix_CLI/
+sudo ./install_bluemix_cli
+
+wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
+bx plugin install icp-linux-amd64
+
+sudo bx pr login -a https://${MASTER_IP}:8443 --skip-ssl-validation
+bx pr clusters
+bx pr cluster-config mycluster.icp
 sudo helm init --client-only
+sudo cp /root/.helm/cert.pem .helm/
+sudo cp /root/.helm/key.pem .helm/
+sudo  helm version --tls
 
-
-#export HELM_HOME=/home/icp/.helm
-# https://192.168.27.199:8443/helm-api/cli/linux-amd64/helm
-# bx pr login -a https://mycluster.icp:8443 --skip-ssl-validation
-#
-# bx pr login -a https://192.168.27.199:8443 --skip-ssl-validation
-# bx pr clusters
-# bx pr cluster-config mycluster
 
 
 
@@ -291,7 +309,6 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   kubectl create namespace dev-namespace
   kubectl create namespace test-namespace
 
-  kubectl create secret docker-registry camsecret --docker-username=test --docker-password=abcd --docker-email=test@gmail.com -n services
   kubectl create -f ~/INSTALL/KUBE/CONFIG/devlimits_quota.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/restricted_policy.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/privileged_policy.yaml
@@ -301,11 +318,13 @@ else
 fi
 
 
+
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "ALL DONE"
+echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Please execute 'source ~/.bashrc'"

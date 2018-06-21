@@ -3,53 +3,37 @@
 source ~/INSTALL/0_variables.sh
 
 
-
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Prerequisites";
 
-wget dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
-rpm -ihv epel-release-7-11.noarch.rpm
+sudo apt-get  --yes --force-yes install apt-transport-https ca-certificates curl software-properties-common python-minimal
 
-# Install docker & python on master
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Docker"
 # INSTALL DOCKER
-if [ "$ARCH" == "ppc64le" ]; then
-  # https://developer.ibm.com/linuxonpower/docker-on-power/
-  echo -e "[docker]\nname=Docker\nbaseurl=http://ftp.unicamp.br/pub/ppc64el/rhel/7/docker-ppc64el/\nenabled=1\ngpgcheck=0\n" | sudo tee /etc/yum.repos.d/docker.repo
-else
-  sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-fi
-sudo yum update -y
-sudo yum install -y docker-ce
-
-# Fall back to pinned version (no fallback for ppc)
-if [ "$?" == "1" ]; then
-  yum install --setopt=obsoletes=0 -y docker-ce-17.09.0.ce-1.el7.centos.x86_64 docker-ce-selinux-17.09.0.ce-1.el7.centos.noarch
-fi
-
-
-sudo service docker start
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get --yes --force-yes update
+sudo apt-get install --yes docker-ce=17.09.0~ce-0~ubuntu
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "Installing Tools"
-sudo yum install -y python-setuptools
-sudo easy_install pip
+echo "Installing Python"
+sudo apt-get update
+#sudo apt install python
 
 # Install Command Line Tools
 echo "Installing Tools";
-sudo yum install -y tree
-sudo yum install -y htop
-sudo yum install -y curl
-sudo yum install -y unzip
-sudo yum install -y iftop
+sudo apt-get --yes --force-yes install tree
+sudo apt-get --yes --force-yes install htop
+sudo apt-get --yes --force-yes install curl
+sudo apt-get --yes --force-yes install unzip
+sudo apt-get --yes --force-yes install iftop
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -97,24 +81,50 @@ echo "$MASTER_IP mycluster.icp" | sudo tee -a /etc/hosts
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Configure Firewall"
-#https://www.ibm.com/support/knowledgecenter/SSBS6K_2.1.0/supported_system_config/required_ports.html
-MASTER_PORTS=("8101" "179" "8500" "8743" "5044" "5046" "9200" "9300" "2380" "4001" "8082" "8084" "4500" "4300" "8600" "80" "443" "8181" "18080" "5000" "35357" "4194" "10248:10252" "30000:32767" "8001" "8888" "8080" "8443" "9235" "9443")
-WORKER_PORTS=("179" "4300" "4194" "10248:10252" "30000:32767" "8001" "8888")
-# Stop firewall
-sudo systemctl stop firewalld.service
+sudo ufw disable
 
-# Open required ports
-for port in "${MASTER_PORTS[@]}"; do
-  sudo iptables -A INPUT -p tcp -m tcp --sport $port -j ACCEPT
-  sudo iptables -A OUTPUT -p tcp -m tcp --dport $port -j ACCEPT
+
+
+
+
+
+
+
+
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "INSTALL WORKERS"
+
+for ((i=0; i < $NUM_WORKERS; i++)); do
+  cat ~/INSTALL/REMOTE_PREPARE/preInstallRemote.sh | ssh ${SSH_USER}@${WORKER_IPS[i]} 'bash -s'
 done
 
-# Do we need this?
-sudo service iptables restart
 
 
 
 
+
+
+
+
+
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "INSTALL INCEPTION"
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
 
 
 
@@ -153,6 +163,15 @@ echo "" | sudo tee -a ~/INSTALL/cluster/hosts
 
 echo "[proxy]" | sudo tee -a ~/INSTALL/cluster/hosts
 echo "${MASTER_IP}" | sudo tee -a ~/INSTALL/cluster/hosts
+
+
+
+if [ "$MONITORING_IP" != "x.x.x.x" ]; then
+  echo "[monitoring]" | sudo tee -a ~/INSTALL/cluster/hosts
+  echo "${MONITORING_IP}" | sudo tee -a ~/INSTALL/cluster/hosts
+else
+  echo "No separate monitoring node"
+fi
 
 # Add line for external IP in config
 echo "cluster_access_ip: ${PUBLIC_IP}" | sudo tee -a ~/INSTALL/cluster/config.yaml

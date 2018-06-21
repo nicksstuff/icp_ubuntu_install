@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol01rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -24,7 +24,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol02rwm
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -38,7 +38,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol03rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -52,7 +52,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol04rwm
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -66,7 +66,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol05rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -80,7 +80,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol06rwm
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -94,7 +94,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol07rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -108,7 +108,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol08rwm
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -122,7 +122,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol13rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -136,7 +136,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol14rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -150,7 +150,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol15rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -164,7 +164,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol16rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -178,7 +178,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol17rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -192,7 +192,7 @@ spec:
   persistentVolumeReclaimPolicy: Recycle
   nfs:
     path: /storage/nfsvol18rwo
-    server: 
+    server: mycluster.icp
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -207,7 +207,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/dsx
 ---
 kind: PersistentVolume
@@ -224,7 +224,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/TRA_data
 ---
 apiVersion: v1
@@ -238,7 +238,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/data-stor
 ---
 apiVersion: v1
@@ -252,7 +252,7 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/hadr-stor
 ---
 apiVersion: v1
@@ -266,7 +266,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/etcd-stor
 ---
 apiVersion: v1
@@ -280,7 +280,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/pv0001
 ---
 apiVersion: v1
@@ -294,7 +294,7 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Recycle
   nfs:
-    server: 
+    server: mycluster.icp
     path: /storage/pv0002
 ---
 kind: PersistentVolume
