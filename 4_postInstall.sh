@@ -161,70 +161,8 @@ if [[ $DO_ISTIO == "y" ||  $DO_ISTIO == "Y" ]]; then
 
   istioctl get virtualservice
 
-cat <<\EOR >~/INSTALL/ISTIO/istio-0.8.0/vs_100_0.yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: helloworld
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - helloworld-gateway
-  http:
-  - match:
-    - uri:
-        exact: /hello
-    route:
-    - destination:
-        host: helloworld
-        subset: v1
-EOR
 
-cat <<\EOR >~/INSTALL/ISTIO/istio-0.8.0/vs_50_50.yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: helloworld
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - helloworld-gateway
-  http:
-  - match:
-    - uri:
-        exact: /hello
-    route:
-    - destination:
-        host: helloworld
-        subset: v1
-      weight: 50
-    - destination:
-        host: helloworld
-        subset: v2
-      weight: 50
-EOR
-
-cat <<\EOR >~/INSTALL/ISTIO/istio-0.8.0/vs_0_100.yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: helloworld
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - helloworld-gateway
-  http:
-  - match:
-    - uri:
-        exact: /hello
-    route:
-    - destination:
-        host: helloworld
-        subset: v2
-EOR
+  cat ~/INSTALL/ISTIO/bashrc_add_istio.sh >> ~/.bashrc
 else
   echo "ISTIO not configured"
 fi
@@ -313,6 +251,9 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   kubectl create -f ~/INSTALL/KUBE/CONFIG/restricted_policy.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/privileged_policy.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/calico_demo.yaml
+
+  cat ~/INSTALL/KUBE/CONFIG/bashrc_add_stress.sh >> ~/.bashrc
+
 else
   echo "Stuff not configured"
 fi
