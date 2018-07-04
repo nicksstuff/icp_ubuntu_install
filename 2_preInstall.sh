@@ -137,6 +137,7 @@ echo "" | sudo tee -a ~/INSTALL/cluster/hosts
 
 echo "[proxy]" | sudo tee -a ~/INSTALL/cluster/hosts
 echo "${MASTER_IP}" | sudo tee -a ~/INSTALL/cluster/hosts
+echo "" | sudo tee -a ~/INSTALL/cluster/hosts
 
 
 
