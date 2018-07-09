@@ -3,7 +3,7 @@
 ```
 cd
 sudo yum install nano
-git clone https://github.com/niklaushirt/icp-ubuntu-install.git INSTALL
+git clone https://github.com/niklaushirt/icp_ubuntu_install.git
 cd INSTALL
 ```
 
