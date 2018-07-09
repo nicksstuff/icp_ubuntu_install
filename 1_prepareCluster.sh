@@ -92,8 +92,11 @@ else
 
     # Loop through the array
     for ((i=0; i < $NUM_WORKERS; i++)); do
-      echo "${WORKER_IPS[i]} ${SSH_USER}@${WORKER_HOSTNAMES[i]}" | sudo tee -a /etc/hosts
+      echo "${WORKER_IPS[i]} ${WORKER_HOSTNAMES[i]}" | sudo tee -a /etc/hosts
     done
+    if [ "$MONITORING_IP" != "x.x.x.x" ]; then
+      echo "${MONITORING_IP} ${MONITORING_HOSTNAME}" | sudo tee -a /etc/hosts
+    fi
     echo "" | sudo tee -a /etc/hosts
 
     sudo cp /etc/hosts ~/worker-hosts

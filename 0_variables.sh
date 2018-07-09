@@ -47,7 +47,7 @@ export WORKER_HOSTNAMES=("name" "name" "name")
 
 # Monitoring IP, only taken into account if filled in
 export MONITORING_IP=x.x.x.x
-
+export MONITORING_HOSTNAME="name"
 
 
 # ----------------------------------------------------------------------------------------------------\\
