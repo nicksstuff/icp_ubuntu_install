@@ -11,16 +11,22 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   echo "Prepare some Stuff"
   helm delete --purge cam --tls
 
-cd ~/INSTALL/
+  kubectl delete pvc cam-bpd-appdata-pv  --namespace services
+  kubectl delete pvc cam-logs-pv  --namespace services
+  kubectl delete pvc cam-mongo-pv  --namespace services
+  kubectl delete pvc cam-terraform-pv  --namespace services
+
+  cd ~/INSTALL/
+
   helm repo add ibm-stable https://raw.githubusercontent.com/IBM/charts/master/repo/stable/
   helm repo update
-  helm fetch ibm-stable/ibm-cam-prod --version 1.2.1
+  helm fetch ibm-stable/ibm-cam --version 1.3.0
 
   kubectl delete secret camsecret -n services
   kubectl create secret docker-registry camsecret --docker-username=${DOCKER_HUB_LOGIN} --docker-password=${DOCKER_HUB_PWD} --docker-email=${DOCKER_HUB_MAIL} -n services
 
   echo "Install Chart"
-  helm install --name cam ibm-cam-prod-1.2.1.tgz --namespace services --set arch=amd64 --set global.image.secretName=camsecret --tls
+  helm install --name cam ibm-cam-1.3.0.tgz --namespace services --set arch=amd64 --set global.image.secretName=camsecret --tls
 else
   echo "CAM not configured"
 fi

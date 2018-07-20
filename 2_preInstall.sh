@@ -154,5 +154,6 @@ echo "proxy_access_ip: ${PUBLIC_IP}" | sudo tee -a ~/INSTALL/cluster/config.yaml
 
 
 echo "Copy SSH Key";
+sudo cp ~/.ssh/id_rsa ~/INSTALL/cluster/ssh_key
 sudo cp ~/.ssh/master.id_rsa ~/INSTALL/cluster/ssh_key
 sudo chmod 400 ~/INSTALL/cluster/ssh_key
