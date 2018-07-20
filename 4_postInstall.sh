@@ -2,39 +2,42 @@
 
 source ~/INSTALL/0_variables.sh
 
-
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
-echo "Installing Command Line Tools";
-# Install Command Line Tools
+read -p "Install and configure Command Line Tools? [y,N]" DO_COMM
+if [[ $DO_COMM == "y" ||  $DO_COMM == "Y" ]]; then
+  echo "Installing Command Line Tools";
+  # Install Command Line Tools
 
-echo "Installing kubectl";
-docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
+  echo "Installing kubectl";
+  docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
 
 
 
-echo "Installing helm";
-#Install HELM CLI
-docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
+  echo "Installing helm";
+  #Install HELM CLI
+  docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
 
-#Install ICP BX CLI + Plugin
-wget https://clis.ng.bluemix.net/download/bluemix-cli/latest/linux64
-tar xvfz linux64
+  #Install ICP BX CLI + Plugin
+  wget https://clis.ng.bluemix.net/download/bluemix-cli/latest/linux64
+  tar xvfz linux64
 
-cd Bluemix_CLI/
-sudo ./install_bluemix_cli
+  cd Bluemix_CLI/
+  sudo ./install_bluemix_cli
 
-wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
-bx plugin install icp-linux-amd64
+  wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
+  bx plugin install icp-linux-amd64
 
-sudo bx pr login -a https://${MASTER_IP}:8443 --skip-ssl-validation
-bx pr clusters
-bx pr cluster-config mycluster.icp
-sudo helm init --client-only
-sudo cp /root/.helm/cert.pem .helm/
-sudo cp /root/.helm/key.pem .helm/
-sudo  helm version --tls
-
+  sudo bx pr login -a https://${MASTER_IP}:8443 --skip-ssl-validation
+  bx pr clusters
+  bx pr cluster-config mycluster.icp
+  sudo helm init --client-only
+  sudo cp /root/.helm/cert.pem .helm/
+  sudo cp /root/.helm/key.pem .helm/
+  sudo  helm version --tls
+else
+  echo "Command Line Tools not configured"
+fi
 
 
 
