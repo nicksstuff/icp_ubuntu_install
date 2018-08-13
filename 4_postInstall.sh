@@ -142,20 +142,26 @@ if [[ $DO_ISTIO == "y" ||  $DO_ISTIO == "Y" ]]; then
   echo "Install ISTIO"
   cd ~/INSTALL/ISTIO
 
-  wget https://github.com/istio/istio/releases/download/0.8.0/istio-0.8.0-linux.tar.gz
-  tar -xzf istio-0.8.0-linux.tar.gz
-  export PATH="$PATH:~/INSTALL/ISTIO/istio-0.8.0/bin"
+  wget https://github.com/istio/istio/releases/download/1.0.0/istio-1.0.0-linux.tar.gz
 
-  cd istio-0.8.0
+  tar -xzf istio-1.0.0-linux.tar.gz
+  export PATH="$PATH:~/INSTALL/ISTIO/istio-1.0.0/bin"
+
+  cd istio-1.0.0
 
   sudo cp bin/istioctl /usr/local/bin/
 
   # Create ISTIO
   echo "Create ISTIO Resources"
 
-  cd ~/INSTALL/ISTIO/istio-0.8.0
+  cd ~/INSTALL/ISTIO/istio-1.0.0
 
-  kubectl apply -f ./install/kubernetes/istio-demo.yaml
+  kubectl apply -f ./install/kubernetes/istio-demo-auth.yaml
+
+  kubectl label namespace default istio-injection=enabled
+  And verify that label was successfully applied:
+
+  kubectl get namespace -L istio-injection
 
   kubectl -n istio-system delete -f ~/INSTALL/ISTIO/ingress_gateway.json
   kubectl -n istio-system apply -f ~/INSTALL/ISTIO/ingress_gateway.json
@@ -296,7 +302,7 @@ echo "--------------------------------------------------------------------------
 echo "Add Repositories"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Charts"
-echo "https://raw.githubusercontent.com/niklaushirt/charts/master/charts/repo/stable/"
+echo "https://raw.githubusercontent.com/niklaushirt/charts/master/helm/charts/repo/stable/"
 echo ""
 echo "Liberty Simple"
 echo "https://raw.githubusercontent.com/niklaushirt/demoliberty/master/charts/stable/repo/stable/"
