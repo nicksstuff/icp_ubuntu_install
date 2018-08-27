@@ -5,6 +5,33 @@ source ~/INSTALL/0_variables.sh
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
+read -p "Install and configure BLOCKCHAIN? [y,N]" DO_BLK
+if [[ $DO_BLK == "y" ||  $DO_BLK == "Y" ]]; then
+  # Create some Stuff
+  echo "Prepare some Stuff"
+
+  mkdir ~/INSTALL/APPS/Blockchain
+  cd ~/INSTALL/APPS/Blockchain
+
+  git clone https://github.com/IBM-Blockchain/ibm-container-service
+
+  cd ~/INSTALL/APPS/Blockchain/ibm-container-service/cs-offerings/scripts
+
+  echo "Install BLOCKCHAIN"
+  ./create_all.sh
+
+else
+  echo "BLOCKCHAIN not configured"
+fi
+
+
+
+
+
+
+
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
 read -p "Install and configure CAM? [y,N]" DO_STF
 if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   # Create some Stuff
