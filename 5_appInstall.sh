@@ -46,32 +46,33 @@ read -p "Install and configure ISTIO? [y,N]" DO_ISTIO
 if [[ $DO_ISTIO == "y" ||  $DO_ISTIO == "Y" ]]; then
   # Install ISTIO
   echo "Install ISTIO"
-  cd ~/INSTALL/ISTIO
+
+  cd ~/INSTALL/APPS/istio
   ISTIO_VERSION=1.0.1
   OSEXT="linux"
   NAME="istio-$ISTIO_VERSION"
   URL="https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${OSEXT}.tar.gz"
   echo "Downloading $NAME from $URL ..."
   curl -L "$URL" | tar xz
-  # TODO: change this so the version is in the tgz/directory name (users trying multiple versions)
   echo "Downloaded into $NAME:"
   ls "$NAME"
+
   BINDIR="$(cd "$NAME/bin" && pwd)"
   echo "Add $BINDIR to your path; e.g copy paste in your shell and/or ~/.profile:"
   echo "export PATH=\"\$PATH:$BINDIR\""
 
   cd "$NAME"
   export PATH=$PWD/bin:$PATH
-  kubectl apply -f ~/INSTALL/"$NAME"/install/kubernetes/helm/istio/templates/crds.yaml
+  kubectl apply -f ~/INSTALL/APPS/istio/"$NAME"/install/kubernetes/helm/istio/templates/crds.yaml
 
-  helm template ~/INSTALL/"$NAME"/install/kubernetes/helm/istio --name istio --namespace istio-system > $HOME/istio.yaml
+  helm template ~/INSTALL/APPS/istio/"$NAME"/install/kubernetes/helm/istio --name istio --namespace istio-system > ~/INSTALL/APPS/istio/istio.yaml
   kubectl create namespace istio-system
-  kubectl apply -f $HOME/istio.yaml
+  kubectl apply -f ~/INSTALL/APPS/istio/istio.yaml
 
-  kubectl apply -f <(istioctl kube-inject -f ~/INSTALL/"$NAME"/samples/bookinfo/platform/kube/bookinfo.yaml)
-  kubectl apply -f ~/INSTALL/"$NAME"/samples/bookinfo/networking/bookinfo-gateway.yaml
+  kubectl apply -f <(istioctl kube-inject -f ~/INSTALL/APPS/istio/"$NAME"/samples/bookinfo/platform/kube/bookinfo.yaml)
+  kubectl apply -f ~/INSTALL/APPS/istio/"$NAME"/samples/bookinfo/networking/bookinfo-gateway.yaml
 
-  sudo cp ~/INSTALL/"$NAME"/bin/istioctl /usr/local/bin/
+  sudo cp ~/INSTALL/APPS/istio/"$NAME"/bin/istioctl /usr/local/bin/
 
 
   export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o 'jsonpath={.items[0].status.hostIP}')
@@ -85,8 +86,9 @@ if [[ $DO_ISTIO == "y" ||  $DO_ISTIO == "Y" ]]; then
   #kubectl delete -f ~/INSTALL/"$NAME"/samples/bookinfo/platform/kube/bookinfo.yaml
   #kubectl delete -f ~/INSTALL/"$NAME"/samples/bookinfo/networking/bookinfo-gateway.yaml
 
-
-  cat ~/INSTALL/ISTIO/bashrc_add_istio.sh >> ~/.bashrc
+  cp ~/.bashrc_icp_save ~/.bashrc
+  cp ~/.bashrc ~/.bashrc_icp_save
+  cat ~/INSTALL/APPS/istio/conf/bashrc_add_istio.sh >> ~/.bashrc
 else
   echo "ISTIO not configured"
 fi
