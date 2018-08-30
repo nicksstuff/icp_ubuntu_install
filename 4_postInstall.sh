@@ -2,6 +2,8 @@
 
 source ~/INSTALL/0_variables.sh
 
+mkdir -p ~/INSTALL/APPS
+
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 read -p "Install and configure Command Line Tools? [y,N]" DO_COMM
@@ -134,59 +136,6 @@ fi
 
 
 
-echo "-----------------------------------------------------------------------------------------------------------"
-echo "-----------------------------------------------------------------------------------------------------------"
-read -p "Install and configure ISTIO? [y,N]" DO_ISTIO
-if [[ $DO_ISTIO == "y" ||  $DO_ISTIO == "Y" ]]; then
-  # Install ISTIO
-  echo "Install ISTIO"
-  cd ~/INSTALL/ISTIO
-  ISTIO_VERSION=1.0.1
-  OSEXT="linux"
-  NAME="istio-$ISTIO_VERSION"
-  URL="https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${OSEXT}.tar.gz"
-  echo "Downloading $NAME from $URL ..."
-  curl -L "$URL" | tar xz
-  # TODO: change this so the version is in the tgz/directory name (users trying multiple versions)
-  echo "Downloaded into $NAME:"
-  ls "$NAME"
-  BINDIR="$(cd "$NAME/bin" && pwd)"
-  echo "Add $BINDIR to your path; e.g copy paste in your shell and/or ~/.profile:"
-  echo "export PATH=\"\$PATH:$BINDIR\""
-
-  cd "$NAME"
-  export PATH=$PWD/bin:$PATH
-  kubectl apply -f ~/INSTALL/"$NAME"/install/kubernetes/helm/istio/templates/crds.yaml
-
-  helm template ~/INSTALL/"$NAME"/install/kubernetes/helm/istio --name istio --namespace istio-system > $HOME/istio.yaml
-  kubectl create namespace istio-system
-  kubectl apply -f $HOME/istio.yaml
-
-  kubectl apply -f <(istioctl kube-inject -f ~/INSTALL/"$NAME"/samples/bookinfo/platform/kube/bookinfo.yaml)
-  kubectl apply -f ~/INSTALL/"$NAME"/samples/bookinfo/networking/bookinfo-gateway.yaml
-
-  sudo cp ~/INSTALL/"$NAME"/bin/istioctl /usr/local/bin/
-
-
-  export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o 'jsonpath={.items[0].status.hostIP}')
-  export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-
-  export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
-
-  curl -o /dev/null -s -w "%{http_code}\n" http://${GATEWAY_URL}/productpage
-
-  kubectl get virtualservice
-  #kubectl delete -f ~/INSTALL/"$NAME"/samples/bookinfo/platform/kube/bookinfo.yaml
-  #kubectl delete -f ~/INSTALL/"$NAME"/samples/bookinfo/networking/bookinfo-gateway.yaml
-
-
-  cat ~/INSTALL/ISTIO/bashrc_add_istio.sh >> ~/.bashrc
-else
-  echo "ISTIO not configured"
-fi
-
-
-
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -220,38 +169,6 @@ if [[ $DO_CAL == "y" ||  $DO_CAL == "Y" ]]; then
 else
   echo "CALICO Commandline not configured"
 fi
-
-read -p "Install and configure Liberty Demo? [y,N]" DO_LIB
-if [[ $DO_LIB == "y" ||  $DO_LIB == "Y" ]]; then
-  # Create Liberty Demo
-  echo "Download Liberty Demo"
-  cd ~/INSTALL/
-  git clone https://github.com/niklaushirt/demoliberty.git
-  cd ~/INSTALL/demoliberty
-  docker build -t demoliberty:1.0.0 docker_100
-  docker build -t demoliberty:1.1.0 docker_110
-  docker build -t demoliberty:1.2.0 docker_120
-  docker build -t demoliberty:1.3.0 docker_130
-
-  docker login mycluster.icp:8500 -u admin -p admin
-  docker tag demoliberty:1.3.0 mycluster.icp:8500/default/demoliberty:1.3.0
-  docker tag demoliberty:1.2.0 mycluster.icp:8500/default/demoliberty:1.2.0
-  docker tag demoliberty:1.1.0 mycluster.icp:8500/default/demoliberty:1.1.0
-  docker tag demoliberty:1.0.0 mycluster.icp:8500/default/demoliberty:1.0.0
-  docker push mycluster.icp:8500/default/demoliberty:1.3.0
-  docker push mycluster.icp:8500/default/demoliberty:1.2.0
-  docker push mycluster.icp:8500/default/demoliberty:1.1.0
-  docker push mycluster.icp:8500/default/demoliberty:1.0.0
-
-  echo "SET WORKER PLACEMENT labels"
-  for ((i=0; i < $NUM_WORKERS; i++)); do
-    kubectl label nodes ${WORKER_IPS[i]} placement=local
-  done
-
-else
-  echo "Liberty Demo not configured"
-fi
-
 
 
 
