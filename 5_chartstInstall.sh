@@ -10,7 +10,7 @@ if [[ $DO_BLK == "y" ||  $DO_BLK == "Y" ]]; then
   # Create some Stuff
   echo "Prepare some Stuff"
 
-  mkdir ~/INSTALL/APPS/Blockchain
+  mkdir -p ~/INSTALL/APPS/Blockchain
   cd ~/INSTALL/APPS/Blockchain
 
   git clone https://github.com/IBM-Blockchain/ibm-container-service
@@ -24,6 +24,39 @@ else
   echo "BLOCKCHAIN not configured"
 fi
 
+
+
+
+
+echo "-----------------------------------------------------------------------------------------------------------"
+echo "-----------------------------------------------------------------------------------------------------------"
+read -p "Install and configure VOICEGATEWAY? [y,N]" DO_VGW
+if [[ $DO_VGW == "y" ||  $DO_VGW == "Y" ]]; then
+  # Create some Stuff
+  echo "Prepare some Stuff"
+  sudo helm repo add ibm-charts https://raw.githubusercontent.com/IBM/charts/master/repo/stable/
+  sudo helm repo update
+
+  echo "Install VOICEGATEWAY"
+  sudo helm install ibm-charts/ibm-voice-gateway-dev --name my-voicegateway \
+  --set mediaRelayEnvVariables.mediaRelayWsPort=8889 \
+  --set sipOrchestratorEnvVariables.mediaRelayHost=localhost:8889 \
+  --set sipOrchestratorEnvVariables.sipPort=5560 \
+  --set sipOrchestratorEnvVariables.sipPortTcp=5560 \
+  --set sipOrchestratorEnvVariables.sipPortTls=5561 \
+  --set serviceCredentials.watsonSttUsername="xxxxx-e17c-4a5d-8a8c-68a4af972dfe" \
+  --set serviceCredentials.watsonSttPassword="xxxxx" \
+  --set serviceCredentials.watsonTtsUsername="xxxxx-b549-46d8-96ac-2b60d4e96006" \
+  --set serviceCredentials.watsonTtsPassword="xxxxx" \
+  --set serviceCredentials.watsonConversationWorkspaceId="xxxx-0f43-4262-9503-680613f41337" \
+  --set serviceCredentials.watsonConversationUsername="xxxx-ad73-41db-8f87-03048f0ab6c0" \
+  --set serviceCredentials.watsonConversationPassword="xxxxx" --tls
+
+  echo "SIP Address will be something like this sip:watson@192.168.27.199:30729 "
+
+else
+  echo "VOICEGATEWAY not configured"
+fi
 
 
 
@@ -75,7 +108,9 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   cd ~/INSTALL/
 
   echo "Install Chart"
-  helm install --namespace=spinnaker --name spinnaker --set kubeConfig.contexts=[icp-cluster1] --set deck.ingress.enabled=true --set deck.host=spinnaker.icp.cloud.com stable/spinnaker --tls
+  helm install --namespace=spinnaker --name spinnaker --set kubeConfig.contexts=[mycluster] --set deck.ingress.enabled=true --set deck.host=spinnaker.icp.cloud.com stable/spinnaker --tls
+  helm install --namespace=spinnaker --name spinnaker --set deck.ingress.enabled=true --set deck.host=spinnaker.icp.cloud.com stable/spinnaker --tls
+
 else
   echo "Spinnaker not configured"
 fi
@@ -93,12 +128,14 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   helm delete --purge openfaas --tls
 
   cd ~/INSTALL/
+  #kubectl apply -f https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml
+
   kubectl create namespace openfaas
   kubectl create namespace openfaas-fn
-  helm repo add openfaas https://openfaas.github.io/faas-netes/
+  sudo helm repo add openfaas https://openfaas.github.io/faas-netes/
 
   echo "Install Chart"
-  helm upgrade openfaas --install openfaas/openfaas --namespace openfaas --set functionNamespace=openfaas-fn --tls
+  sudo helm upgrade openfaas --install openfaas/openfaas --namespace openfaas --set functionNamespace=openfaas-fn --tls
 else
   echo "OpenFaaS not configured"
 fi
@@ -119,15 +156,15 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   cd ~/INSTALL/
   sudo rm -r ~/INSTALL/OpenWhisk
 
-  kubectl create namespace ow
+  kubectl create namespace openwhisk
 
   kubectl label nodes --all openwhisk-role=invoker
   git clone https://github.com/apache/incubator-openwhisk-deploy-kube.git OpenWhisk
 
-  cd OpenWhisk/helm
+  cd ~/INSTALL/OpenWhisk/helm/openwhisk
 
   echo "Install Chart"
-  helm install . --namespace=ow --name=openwhisk -f ~/INSTALL/KUBE/OPENWHISK/openwhisk.yaml --tls
+  helm install . --namespace=openwhisk --name=openwhisk -f ~/INSTALL/KUBE/OPENWHISK/openwhisk.yaml --tls
 
   echo "Install Command Line"
   mkdir -p ~/INSTALL/TEMP
