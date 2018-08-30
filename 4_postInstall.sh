@@ -15,24 +15,21 @@ if [[ $DO_COMM == "y" ||  $DO_COMM == "Y" ]]; then
   docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-inception:2.1.0.3 cp /usr/local/bin/kubectl /data
 
 
+  echo "Installing IBMCLOUD Command Line & Plugin";
+  curl -sL http://ibm.biz/idt-installer | bash
+
+  wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
+  ibmcloud plugin install icp-linux-amd64
+
+  sudo ibmcloud pr login -a https://${MASTER_IP}:8443 --skip-ssl-validation
+  sudo ibmcloud pr clusters
+  sudo ibmcloud pr cluster-config mycluster
 
   echo "Installing helm";
   #Install HELM CLI
   docker run -e LICENSE=accept --net=host -v /usr/local/bin:/data ibmcom/icp-helm-api:1.0.0 cp /usr/src/app/public/cli/linux-amd64/helm /data
 
-  #Install ICP BX CLI + Plugin
-  wget https://clis.ng.bluemix.net/download/bluemix-cli/latest/linux64
-  tar xvfz linux64
-
-  cd Bluemix_CLI/
-  sudo ./install_bluemix_cli
-
-  wget https://mycluster.icp:8443/api/cli/icp-linux-amd64 --no-check-certificate
-  bx plugin install icp-linux-amd64
-
-  sudo bx pr login -a https://${MASTER_IP}:8443 --skip-ssl-validation
-  bx pr clusters
-  bx pr cluster-config mycluster.icp
+  echo "Configuring helm";
   sudo helm init --client-only
   sudo cp /root/.helm/cert.pem .helm/
   sudo cp /root/.helm/key.pem .helm/
@@ -65,7 +62,7 @@ if [[ $DO_LDAP == "y" ||  $DO_LDAP == "Y" ]]; then
 
   # Create LDAP Users
   echo "Create LDAP Users"
-  ldapadd -x -D cn=admin,dc=mycluster,dc=icp -W -f  ~/INSTALL/LDAP/addldapcontent.ldif
+  ldapadd -x -D cn=admin,dc=mycluster,dc=icp -W -f  ~/INSTALL/KUBE/LDAP/addldapcontent.ldif
 
   echo "Import LDAP Users "
   export ACCESS_TOKEN=$(curl -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=admin&password=admin&scope=openid" https://:8443/idprovider/v1/auth/identitytoken --insecure |       python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
