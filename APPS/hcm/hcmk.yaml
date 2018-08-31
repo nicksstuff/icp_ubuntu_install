@@ -1,0 +1,12 @@
+hcmm:
+  enabled: false
+hcmk:
+  enabled: true
+  managerserver: "https://192.168.27.199:8443/hcm"
+  token: {service account token}
+  tillersecret: helm-secret
+  clustername: example
+  clusterip: 192.168.27.199
+  location: exampleville
+  provider: IBM
+  purpose: InstallationExample

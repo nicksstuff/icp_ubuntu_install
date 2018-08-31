@@ -31,9 +31,13 @@ if [[ $DO_COMM == "y" ||  $DO_COMM == "Y" ]]; then
 
   echo "Configuring helm";
   sudo helm init --client-only
-  sudo cp /root/.helm/cert.pem .helm/
-  sudo cp /root/.helm/key.pem .helm/
+  sudo cp /root/.helm/cert.pem ~/.helm/
+  sudo cp /root/.helm/key.pem ~/.helm/
   sudo  helm version --tls
+
+  sudo chown -R icp:icp ~/.kube/
+  sudo chown -R icp:icp ~/.helm/
+
 else
   echo "Command Line Tools not configured"
 fi
@@ -65,10 +69,9 @@ if [[ $DO_LDAP == "y" ||  $DO_LDAP == "Y" ]]; then
   ldapadd -x -D cn=admin,dc=mycluster,dc=icp -W -f  ~/INSTALL/KUBE/LDAP/addldapcontent.ldif
 
   echo "Import LDAP Users "
-  export ACCESS_TOKEN=$(curl -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=admin&password=admin&scope=openid" https://:8443/idprovider/v1/auth/identitytoken --insecure |       python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+  export ACCESS_TOKEN=$(curl -k -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -d "grant_type=password&username=admin&password=admin&scope=openid" https://${MASTER_IP}:8443/idprovider/v1/auth/identitytoken --insecure |       python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
   echo "$ACCESS_TOKEN"
-  curl -k -X POST --header "Authorization: bearer $ACCESS_TOKEN" --header 'Content-Type: application/json' -d '{"LDAP_ID": "OPENLDAP", "LDAP_URL": "ldap://:389", "LDAP_BASEDN": "dc=mycluster,dc=icp", "LDAP_BINDDN": "cn=admin,dc=mycluster,dc=icp", "LDAP_BINDPASSWORD": "admin", "LDAP_TYPE": "Custom", "LDAP_USERFILTER": "(&(uid=%v)(objectclass=person))", "LDAP_GROUPFILTER": "(&(cn=%v)(objectclass=groupOfUniqueNames))", "LDAP_USERIDMAP": "*:uid","LDAP_GROUPIDMAP":"*:cn", "LDAP_GROUPMEMBERIDMAP": "groupOfUniqueNames:uniquemember"}' 'https://:8443/idmgmt/identity/api/v1/directory/ldap/onboardDirectory'
-
+  curl -k -X POST --header "Authorization: bearer $ACCESS_TOKEN" --header 'Content-Type: application/json' -d '{"LDAP_BINDPASSWORD": "admin", "LDAP_ID":"LDAP","LDAP_REALM":"REALM","LDAP_HOST":"'${MASTER_IP}'","LDAP_PORT":"389","LDAP_IGNORECASE":"false","LDAP_BASEDN":"dc=mycluster,dc=icp","LDAP_BINDDN":"cn=admin,dc=mycluster,dc=icp","LDAP_TYPE":"Custom","LDAP_USERFILTER":"(&(uid=%v)(objectclass=person))","LDAP_GROUPFILTER":"(&(cn=%v)(objectclass=groupOfUniqueNames))","LDAP_USERIDMAP":"*:uid","LDAP_GROUPIDMAP":"*:cn","LDAP_GROUPMEMBERIDMAP":"groupOfUniqueNames:uniqueMember","LDAP_URL":"ldap://'${MASTER_IP}':389","LDAP_PROTOCOL":"ldap"}' 'https://'${MASTER_IP}':8443/idmgmt/identity/api/v1/directory/ldap/onboardDirectory'
 
 else
   echo "LDAP not configured"
