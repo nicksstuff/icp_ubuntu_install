@@ -37,6 +37,8 @@ if [[ $DO_COMM == "y" ||  $DO_COMM == "Y" ]]; then
 
   sudo chown -R icp:icp ~/.kube/
   sudo chown -R icp:icp ~/.helm/
+  sudo chown -R icp:icp ~/.bluemix/
+
 
 else
   echo "Command Line Tools not configured"
@@ -181,6 +183,7 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   cd ~/INSTALL/
   kubectl create namespace dev-namespace
   kubectl create namespace test-namespace
+  kubectl create namespace prod-namespace
 
   kubectl create -f ~/INSTALL/KUBE/CONFIG/devlimits_quota.yaml
   kubectl create -f ~/INSTALL/KUBE/CONFIG/restricted_policy.yaml

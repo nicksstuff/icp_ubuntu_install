@@ -1,4 +1,4 @@
-
+docker login -u niklaushirt
 #-------------------------------------------------------
 # VOICEGATEWAY
 #-------------------------------------------------------
@@ -47,6 +47,14 @@ sudo docker pull istio/proxyv2:1.0.0
 sudo docker pull istio/servicegraph:1.0.0
 sudo docker pull istio/sidecar_injector:1.0.0
 
+
+sudo docker pull istio/examples-bookinfo-details-v1:1.8.0
+sudo docker pull istio/examples-bookinfo-ratings-v1:1.8.0
+sudo docker pull istio/examples-bookinfo-productpage-v1:1.8.0
+sudo docker pull istio/examples-bookinfo-reviews-v1:1.8.0
+sudo docker pull istio/examples-bookinfo-reviews-v2:1.8.0
+sudo docker pull istio/examples-bookinfo-reviews-v3:1.8.0
+
 #-------------------------------------------------------
 # DevOps
 #-------------------------------------------------------
@@ -54,6 +62,15 @@ sudo docker pull jenkins/jenkins:2.132
 sudo docker pull jenkins/jnlp-slave:3.10-1
 sudo docker pull gitlab/gitlab-ce:9.3.8-ce.0
 sudo docker pull sonarqube:6.7.3
+
+
+#-------------------------------------------------------
+# OpenFaaS
+#-------------------------------------------------------
+sudo docker pull prom/alertmanager:v0.15.0
+sudo docker pull openfaas/gateway:0.9.0
+sudo docker pull nats-streaming:0.6.0
+sudo docker pull prom/prometheus:v2.3.1
 
 
 
@@ -69,44 +86,25 @@ sudo docker pull hybridcloudibm/dsx-dev-icp-zeppelin:v1.01
 #-------------------------------------------------------
 # CAM
 #-------------------------------------------------------
-sudo docker pull store/ibmcorp/icam-bpd-cds:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-bpd-cds:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-bpd-mariadb:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-bpd-mariadb:2.1.0.3_fp1-x86_64
 sudo docker pull store/ibmcorp/icam-bpd-mds:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-bpd-ui:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-bpd-ui:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-broker:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-broker:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-busybox:2.1.0.2_051518-x86_64
-sudo docker pull store/ibmcorp/icam-iaas:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-iaas:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-mongo:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-mongo:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-orchestration:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-orchestration:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-portal-ui:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-portal-ui:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-provider-helm:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-provider-helm:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-provider-terraform:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-provider-terraform:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-proxy:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-proxy:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-redis:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-redis:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-service-composer-api:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-service-composer-api:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-service-composer-ui:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-service-composer-ui:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-tenant-api:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-tenant-api:2.1.0.3_fp1-x86_64
 sudo docker pull store/ibmcorp/icam-ui-basic:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-ui-connections:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-ui-connections:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-ui-instances:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-ui-instances:2.1.0.3_fp1-x86_64
-sudo docker pull store/ibmcorp/icam-ui-templates:2.1.0.2_051518-x86_64
 sudo docker pull store/ibmcorp/icam-ui-templates:2.1.0.3_fp1-x86_64
 
 #-------------------------------------------------------

@@ -111,7 +111,7 @@ if [[ $DO_BLK == "y" ||  $DO_BLK == "Y" ]]; then
 
   git clone https://github.com/IBM-Blockchain/ibm-container-service
 
-  cd ~/INSTALL/APPS/Blockchain/ibm-container-service/cs-offerings/scripts
+  cd ~/INSTALL/APPS/blockchain/ibm-container-service/cs-offerings/scripts
 
   echo "Install BLOCKCHAIN"
   ./create_all.sh
@@ -167,22 +167,31 @@ if [[ $DO_STF == "y" ||  $DO_STF == "Y" ]]; then
   echo "Prepare some Stuff"
   helm delete --purge cam --tls
 
-  kubectl delete pvc cam-bpd-appdata-pv  --namespace services
-  kubectl delete pvc cam-logs-pv  --namespace services
-  kubectl delete pvc cam-mongo-pv  --namespace services
-  kubectl delete pvc cam-terraform-pv  --namespace services
+  kubectl delete pvc cam-bpd-appdata-pv --namespace services
+  kubectl delete pvc cam-logs-pv --namespace services
+  kubectl delete pvc cam-mongo-pv --namespace services
+  kubectl delete pvc cam-terraform-pv --namespace services
 
   cd ~/INSTALL/
 
   helm repo add ibm-stable https://raw.githubusercontent.com/IBM/charts/master/repo/stable/
   helm repo update
-  helm fetch ibm-stable/ibm-cam --version 1.3.0
+  helm fetch ibm-stable/ibm-cam --version 1.3.1
 
   kubectl delete secret camsecret -n services
   kubectl create secret docker-registry camsecret --docker-username=${DOCKER_HUB_LOGIN} --docker-password=${DOCKER_HUB_PWD} --docker-email=${DOCKER_HUB_MAIL} -n services
 
+  #export serviceIDName='service-deploy'
+  #export serviceApiKeyName='service-deploy-api-key'
+  #ibmcloud pr login -a https://localhost:8443 --skip-ssl-validation -u admin  -p admin -c id-mycluster-account
+  #ibmcloud pr target -n services
+  #ibmcloud pr iam service-id-create ${serviceIDName} -d 'Service ID for service-deploy'
+  #ibmcloud pr iam service-policy-create ${serviceIDName} -r Administrator,ClusterAdministrator --service-name ''
+  #ibmcloud pr iam service-api-key-create ${serviceApiKeyName} ${serviceIDName} -d 'Api key for service-deploy'
+
+
   echo "Install Chart"
-  helm install --name cam ibm-cam-1.3.0.tgz --namespace services --set arch=amd64 --set global.image.secretName=camsecret --tls
+  helm install --name cam ibm-cam-1.3.1.tgz --namespace services --set arch=amd64 --set global.image.secretName=camsecret --set global.iam.deployApiKey=ye1_J8rgpK7o5zZK0kb0VVEjA-4Qcsv1Q3YtjFETZlF3 --tls
 else
   echo "CAM not configured"
 fi
