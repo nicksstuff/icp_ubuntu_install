@@ -7,7 +7,7 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Prerequisites";
 
-sudo apt-get  --yes --force-yes install apt-transport-https ca-certificates curl software-properties-common python-minimal
+sudo apt-get  --yes --force-yes install snapd apt-transport-https ca-certificates curl software-properties-common python-minimal
 
 
 
@@ -15,10 +15,17 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Docker"
 # INSTALL DOCKER
+#snap install docker
+
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+
+#sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+#sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get --yes --force-yes update
-sudo apt-get install --yes docker-ce=17.09.0~ce-0~ubuntu
+sudo apt-get install --yes docker-ce
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -76,6 +83,10 @@ for ((i=0; i < $NUM_WORKERS; i++)); do
     cat ~/INSTALL/KUBE/REMOTE_PREPARE/preInstallRemote.sh | ssh root@${WORKER_IPS[i]} 'bash -s'
   fi
 done
+
+if [ "$MONITORING_IP" != "x.x.x.x" ]; then
+    cat ~/INSTALL/KUBE/REMOTE_PREPARE/preInstallRemote.sh | ssh root@${MONITORING_IP} 'bash -s'
+fi
 
 
 

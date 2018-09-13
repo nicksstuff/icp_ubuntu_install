@@ -15,6 +15,9 @@ sudo docker pull ibmblockchain/fabric-ccenv:1.1.0
 sudo docker pull ibmblockchain/fabric-orderer:1.1.0
 sudo docker pull ibmblockchain/fabric-peer:1.1.0
 sudo docker pull ibmblockchain/fabric-tools:1.1.0
+sudo docker pull ibmblockchain/composer-rest-server:0.19.5
+sudo docker pull ibmblockchain/fabric-couchdb:0.4.6
+
 
 #-------------------------------------------------------
 #  OpenWhisk
