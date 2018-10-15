@@ -54,24 +54,32 @@
 
 
 
-  function istio_bookinfo_test()
+  function bookinfo_test()
   {
   echo "TEST BOOKINFO";
-  for i in `seq 1 200000`; do curl http://$(hostname --ip-address):31461/productpage; done
+  for i in `seq 1 200000`; do curl http://$(hostname --ip-address):31380/productpage; done
   }
 
 
-  function bookinfo_50()
+
+
+  function bookinfo_v1()
   {
   echo "Only V1";
-  istioctl create -f ~/INSTALL/APPS/istio/bookinfo/book_50.yaml
+  kubectl apply -f ~/INSTALL/APPS/istio/bookinfo/book_all_v1.yaml
+  }
+
+  function bookinfo_50()
+  {
+  echo "Only V1/V2";
+  kubectl apply -f ~/INSTALL/APPS/istio/bookinfo/book_50.yaml
   }
 
 
   function bookinfo_jason()
   {
   echo "Only JASON on V3";
-  istioctl replace -f ~/INSTALL/APPS/istio/bookinfo/book_jason.yaml
+  kubectl apply -f ~/INSTALL/APPS/istio/bookinfo/book_jason.yaml
   }
 
 

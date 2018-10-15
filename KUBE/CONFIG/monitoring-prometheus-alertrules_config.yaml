@@ -1,11 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  labels:
-    app: monitoring-prometheus
-    component: prometheus
   name: monitoring-prometheus-alertrules
   namespace: kube-system
+  labels:
+    app: monitoring-prometheus
+    chart: ibm-icpmonitoring-1.2.0
+    component: prometheus
+    heritage: Tiller
+    release: monitoring
 data:
   sample.rules: |-
     groups:

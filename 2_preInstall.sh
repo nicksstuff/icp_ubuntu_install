@@ -15,17 +15,12 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Installing Docker"
 # INSTALL DOCKER
-#snap install docker
-
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-
+snap install docker
 
 #sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 #sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-get --yes --force-yes update
-sudo apt-get install --yes docker-ce
+#sudo apt-get --yes --force-yes update
+#sudo apt-get install --yes docker-ce=17.09.0~ce-0~ubuntu
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -121,7 +116,7 @@ echo "--------------------------------------------------------------------------
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "Fetch Docker Inception Image"
-sudo docker pull ibmcom/icp-inception:${ICP_VERSION}
+#sudo docker pull ibmcom/icp-inception:${ICP_VERSION}
 
 
 echo "-----------------------------------------------------------------------------------------------------------"
@@ -162,6 +157,8 @@ fi
 # Add line for external IP in config
 echo "cluster_access_ip: ${PUBLIC_IP}" | sudo tee -a ~/INSTALL/cluster/config.yaml
 echo "proxy_access_ip: ${PUBLIC_IP}" | sudo tee -a ~/INSTALL/cluster/config.yaml
+echo 'kubelet_extra_args: ["--max-pods=300"]' | sudo tee -a ~/INSTALL/cluster/config.yaml
+
 
 echo "-----------------------------------------------------------------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------"
